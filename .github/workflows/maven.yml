@@ -19,5 +19,5 @@ jobs:
           cache: maven
       - name: Build
         run: mvn -B package --file pom.xml
-      - name: Build
+      - name: Test
         run: mvn -B test --file pom.xml
