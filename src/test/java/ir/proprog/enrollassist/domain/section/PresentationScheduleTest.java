@@ -65,17 +65,15 @@ public class PresentationScheduleTest {
     }
 
     @Test
-    public void hasConflictTest_other_schedule_ends_before_main_schedule_starts_include_same_day_different_locale_no_conflict() {
+    public void hasConflictTest_other_schedule_ends_before_main_schedule_starts_include_same_day_different_locale_no_conflict() throws ExceptionList {
         Locale.setDefault(Locale.forLanguageTag("fa"));
-        assertThrows(ExceptionList.class,
-                () -> assertFalse(schedule.hasConflict(new PresentationSchedule("Saturday", "07:30", "09:00"))));
+        assertFalse(schedule.hasConflict(new PresentationSchedule("Saturday", "07:30", "09:00")));
     }
 
     @Test
-    public void hasConflictTest_other_schedule_ends_before_main_schedule_starts_exclude_same_day_different_locale_no_conflict() {
+    public void hasConflictTest_other_schedule_ends_before_main_schedule_starts_exclude_same_day_different_locale_no_conflict() throws ExceptionList {
         Locale.setDefault(Locale.forLanguageTag("fa"));
-        assertThrows(ExceptionList.class,
-                () -> assertFalse(schedule.hasConflict(new PresentationSchedule("Saturday", "07:00", "09:00"))));
+        assertFalse(schedule.hasConflict(new PresentationSchedule("Saturday", "07:00", "09:00")));
     }
 
     @Test
