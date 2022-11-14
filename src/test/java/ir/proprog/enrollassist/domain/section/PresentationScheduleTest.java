@@ -1,7 +1,6 @@
-package ir.proprog.enrollassist.domain.selection;
+package ir.proprog.enrollassist.domain.section;
 
 import ir.proprog.enrollassist.Exception.ExceptionList;
-import ir.proprog.enrollassist.domain.section.PresentationSchedule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
