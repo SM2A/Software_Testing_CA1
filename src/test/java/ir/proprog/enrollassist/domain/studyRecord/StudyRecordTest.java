@@ -33,7 +33,14 @@ public class StudyRecordTest {
                 Arguments.of("Masters", "Undergraduate", 3, 8.0, false),
                 Arguments.of("Undergraduate", "Masters", 3, 13.0, true),
                 Arguments.of("Undergraduate", "Masters", 3, 10.0, true),
-                Arguments.of("Undergraduate", "Masters", 3, 9.0, false)
+                Arguments.of("Undergraduate", "Masters", 3, 9.0, false),
+                Arguments.of("PHD", "Masters", 3, 10.0, false),
+                Arguments.of("PHD", "Masters", 3, 12.0, true),
+                Arguments.of("PHD", "Masters", 3, 14.0, true),
+                Arguments.of("Undergraduate", "Undergraduate", 0, 9.9, false),
+                Arguments.of("Undergraduate", "Undergraduate", 0, 10.0, true),
+                Arguments.of("Masters", "Masters", 0, 11.9, false),
+                Arguments.of("Masters", "Masters", 0, 12.0, true)
                 );
     }
 
