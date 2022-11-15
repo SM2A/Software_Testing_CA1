@@ -1,13 +1,17 @@
 package ir.proprog.enrollassist.domain.enrollmentList;
 
-import ir.proprog.enrollassist.domain.EnrollmentRules.EnrollmentRuleViolation;
+import ir.proprog.enrollassist.domain.EnrollmentRules.*;
+import ir.proprog.enrollassist.domain.course.Course;
+import ir.proprog.enrollassist.domain.section.Section;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.doReturn;
@@ -98,4 +102,153 @@ public class EnrollmentListTest {
         //then
         Assertions.assertThat(violations.isEmpty()).isTrue();
     }
+
+    @Mock
+    private Course requestedCourse;
+
+    @Mock
+    private Course prerequisite;
+    @Test
+    public void checkEnrollmentRulesTest_HasPassedAllPrerequisites_violation() {
+
+        List<EnrollmentRuleViolation> prerequisitesViolations = new ArrayList<>();
+        prerequisitesViolations.add(new PrerequisiteNotTaken(requestedCourse, prerequisite));
+
+        // given
+        doReturn(prerequisitesViolations).when(enrollmentListSpy).checkHasPassedAllPrerequisites();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkHasNotAlreadyPassedCourses();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkNoCourseHasRequestedTwice();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkValidGPALimit();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkExamTimeConflicts();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkSectionScheduleConflicts();
+        // when
+        List<EnrollmentRuleViolation> violations = enrollmentListSpy.checkEnrollmentRules();
+        //then
+        Assertions.assertThat(violations.isEmpty()).isFalse();
+    }
+
+    @Test
+    public void checkEnrollmentRulesTest_HasNotAlreadyPassedCourses_violation() {
+
+        List<EnrollmentRuleViolation> passedCoursesViolations = new ArrayList<>();
+        passedCoursesViolations.add(new RequestedCourseAlreadyPassed(requestedCourse));
+
+        // given
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkHasPassedAllPrerequisites();
+        doReturn(passedCoursesViolations).when(enrollmentListSpy).checkHasNotAlreadyPassedCourses();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkNoCourseHasRequestedTwice();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkValidGPALimit();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkExamTimeConflicts();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkSectionScheduleConflicts();
+        // when
+        List<EnrollmentRuleViolation> violations = enrollmentListSpy.checkEnrollmentRules();
+        //then
+        Assertions.assertThat(violations.isEmpty()).isFalse();
+    }
+
+    @Test
+    public void checkEnrollmentRulesTest_NoCourseHasRequestedTwice_violation() {
+
+        List<EnrollmentRuleViolation> requestedTwiceViolations = new ArrayList<>();
+        requestedTwiceViolations.add(new CourseRequestedTwice(requestedCourse));
+
+        // given
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkHasPassedAllPrerequisites();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkHasNotAlreadyPassedCourses();
+        doReturn(requestedTwiceViolations).when(enrollmentListSpy).checkNoCourseHasRequestedTwice();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkValidGPALimit();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkExamTimeConflicts();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkSectionScheduleConflicts();
+        // when
+        List<EnrollmentRuleViolation> violations = enrollmentListSpy.checkEnrollmentRules();
+        //then
+        Assertions.assertThat(violations.isEmpty()).isFalse();
+    }
+
+    @Mock
+    private MaxCreditsLimitExceeded maxCreditsLimitExceeded;
+
+    @Test
+    public void checkEnrollmentRulesTest_ValidGPALimit_max_violation() {
+
+        List<EnrollmentRuleViolation> validGPALimitViolations = new ArrayList<>();
+        validGPALimitViolations.add(maxCreditsLimitExceeded);
+
+        // given
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkHasPassedAllPrerequisites();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkHasNotAlreadyPassedCourses();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkNoCourseHasRequestedTwice();
+        doReturn(validGPALimitViolations).when(enrollmentListSpy).checkValidGPALimit();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkExamTimeConflicts();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkSectionScheduleConflicts();
+        // when
+        List<EnrollmentRuleViolation> violations = enrollmentListSpy.checkEnrollmentRules();
+        //then
+        Assertions.assertThat(violations.isEmpty()).isFalse();
+    }
+
+    @Mock
+    private MinCreditsRequiredNotMet minCreditsRequiredNotMet;
+    @Test
+    public void checkEnrollmentRulesTest_ValidGPALimit_min_violation() {
+
+        List<EnrollmentRuleViolation> validGPALimitViolations = new ArrayList<>();
+        validGPALimitViolations.add(minCreditsRequiredNotMet);
+
+        // given
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkHasPassedAllPrerequisites();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkHasNotAlreadyPassedCourses();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkNoCourseHasRequestedTwice();
+        doReturn(validGPALimitViolations).when(enrollmentListSpy).checkValidGPALimit();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkExamTimeConflicts();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkSectionScheduleConflicts();
+        // when
+        List<EnrollmentRuleViolation> violations = enrollmentListSpy.checkEnrollmentRules();
+        //then
+        Assertions.assertThat(violations.isEmpty()).isFalse();
+    }
+
+    @Mock
+    private Section section1;
+
+    @Mock
+    private Section section2;
+    @Test
+    public void checkEnrollmentRulesTest_ExamTimeConflicts_violation() {
+
+        List<EnrollmentRuleViolation> examTimeViolations = new ArrayList<>();
+        examTimeViolations.add(new ExamTimeCollision(section1, section2));
+
+        // given
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkHasPassedAllPrerequisites();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkHasNotAlreadyPassedCourses();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkNoCourseHasRequestedTwice();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkValidGPALimit();
+        doReturn(examTimeViolations).when(enrollmentListSpy).checkExamTimeConflicts();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkSectionScheduleConflicts();
+        // when
+        List<EnrollmentRuleViolation> violations = enrollmentListSpy.checkEnrollmentRules();
+        //then
+        Assertions.assertThat(violations.isEmpty()).isFalse();
+    }
+
+    @Test
+    public void checkEnrollmentRulesTest_SectionScheduleConflicts_violation() {
+
+        List<EnrollmentRuleViolation> sectionScheduleViolations = new ArrayList<>();
+        sectionScheduleViolations.add(new ConflictOfClassSchedule(section1, section2));
+
+        // given
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkHasPassedAllPrerequisites();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkHasNotAlreadyPassedCourses();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkNoCourseHasRequestedTwice();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkValidGPALimit();
+        doReturn(Lists.emptyList()).when(enrollmentListSpy).checkExamTimeConflicts();
+        doReturn(sectionScheduleViolations).when(enrollmentListSpy).checkSectionScheduleConflicts();
+        // when
+        List<EnrollmentRuleViolation> violations = enrollmentListSpy.checkEnrollmentRules();
+        //then
+        Assertions.assertThat(violations.isEmpty()).isFalse();
+    }
+
 }
