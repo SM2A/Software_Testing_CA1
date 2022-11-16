@@ -5,7 +5,9 @@ import ir.proprog.enrollassist.domain.course.Course;
 import ir.proprog.enrollassist.domain.section.Section;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
@@ -16,9 +18,12 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.doReturn;
@@ -63,7 +68,11 @@ public class EnrollmentListTest {
                 Arguments.of(noViolation, noViolation, noViolation, noViolation, examTimeCollisionViolations, noViolation, examTimeCollisionViolations),
                 Arguments.of(noViolation, noViolation, noViolation, noViolation, noViolation, sectionScheduleViolations, sectionScheduleViolations),
                 Arguments.of(prerequisiteNotTakenViolations, requestedCourseAlreadyPassedViolations, noViolation, noViolation, noViolation, noViolation,
-                        Stream.concat(prerequisiteNotTakenViolations.stream(), requestedCourseAlreadyPassedViolations.stream()).toList())
+                        Stream.concat(prerequisiteNotTakenViolations.stream(), requestedCourseAlreadyPassedViolations.stream()).toList()),
+                Arguments.of(noViolation, requestedCourseAlreadyPassedViolations, courseRequestedTwiceViolations, noViolation, noViolation, noViolation,
+                        Stream.concat(requestedCourseAlreadyPassedViolations.stream(), courseRequestedTwiceViolations.stream()).toList()),
+                Arguments.of(noViolation, noViolation, noViolation, minCreditsRequiredNotMetViolations, noViolation, examTimeCollisionViolations,
+                        Stream.concat(minCreditsRequiredNotMetViolations.stream(), examTimeCollisionViolations.stream()).toList())
         );
     }
 
@@ -85,4 +94,5 @@ public class EnrollmentListTest {
         //then
         Assertions.assertEquals(violations, args.get(6));
     }
+
 }
